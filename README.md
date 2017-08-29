@@ -1,10 +1,7 @@
 # js_mysql_query_builder
 A javascript object for building mysql queries
 
-/** 
-* sample code showing how to pass data into the query builder...
-*
-*---------------------------------------------------------------
+
 var query_builder 	= require('./mod.query_builder.js');
 var qb				= new query_builder();
 var my_modifiers = ['SQL_CALC_FOUND_ROWS', 'DISTINCT'];
