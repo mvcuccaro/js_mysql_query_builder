@@ -50,9 +50,9 @@ module.exports = function() {
 
 		//this version of the field builder assumes we got an array of objects and that each object contains a table name and then an array of columns for that table
 		if( table_provided_once ){
-			console.log('table_provided_once');
+			//console.log('table_provided_once');
 			arg_fields.forEach( function(outter_element){
-				var table = outter_element.table;
+				var table = mysql_real_escape_string(outter_element.table);
 				outter_element.columns.forEach(function(inner_element){
 					if( inner_element.startsWith('---') ) {
 						var column = inner_element.replace('---', '');
@@ -71,7 +71,7 @@ module.exports = function() {
 		var i = 0;
 		arg_tables.forEach( function(element){
 			i++;
-			select 	+= element.name;
+			select 	+= mysql_real_escape_string(element.name);
 			if( i < total_tables ) {
 				select += ', ';
 			}
@@ -89,8 +89,8 @@ module.exports = function() {
 		this.default_table 	= arg_table;
 		update = arg_base + ' ' + arg_table + ' SET ';
 		Object.keys(arg_update_columns).forEach(function(key,index) {
-			key_string = '`' + key + '`';
-			value_string = arg_update_columns[key] == null ? arg_update_columns[key] : '"' + arg_update_columns[key] + '"';
+			key_string = '`' + mysql_real_escape_string(key) + '`';
+			value_string = arg_update_columns[key] == null ? arg_update_columns[key] : '"' + mysql_real_escape_string(arg_update_columns[key]) + '"';
 			update += key_string + ' = ' + value_string + ', ';
 		});
 		update = this._removeLastComma(update);
@@ -136,10 +136,17 @@ module.exports = function() {
 			total_clause = outter_element.length;
 			outter_element.forEach(function(inner_element) {
 				i++;
+
+				//escape all inner element values
+				inner_element.operator 	= mysql_real_escape_string(inner_element.operator);
+				inner_element.table		= mysql_real_escape_string(inner_element.table);
+				inner_element.column 	= mysql_real_escape_string(inner_element.column);
+				inner_element.value 	= mysql_real_escape_string(inner_element.value);
+
 				if( inner_element.operator === undefined || inner_element.operator == 'eq'){
 					where += inner_element.table + '.' + inner_element.column + ' = "' + inner_element.value + '" ';
 				}
-				else { 
+				else {
 					switch( inner_element.operator.toLowerCase() ){
 						case 'gt':
 						case 'greater_than':
@@ -229,16 +236,31 @@ module.exports = function() {
 	/**
 	* buildOrderBy()
 	*
-	* arg_order_by: 	object with a column and a direction
+	* arg_order_by: 	object with a column and a direction or array of objects with the same format
 	* returns: 			this
 	*/
 	function buildOrderBy(arg_order_by = null){
+		//ignore if null
 		if( arg_order_by == null ) {
 			return this;
 		}
-		var column 		= arg_order_by.column;
-		var direction	= arg_order_by.direction;
-		this.where += ' ORDER BY ' + column + ' ' + direction + ' ';
+
+		//init order by string
+		var order_by = ' ORDER BY ';
+
+		//cast arg_order_by to array 
+		if( !Array.isArray(arg_order_by) ) {
+			arg_order_by = [arg_order_by];
+		}
+
+		//process order by array
+		arg_order_by.forEach( function(ob) {
+		 	order_by += ob.column + ' ' + ob.direction + ', ';
+		});
+
+		order_by = this._removeLastComma(order_by);
+		this.where += mysql_real_escape_string(order_by);
+
 		return this;
 	}
 
@@ -268,7 +290,8 @@ module.exports = function() {
 			offset	 	= arg_offset;
 		}
 
-		this.where += ' LIMIT ' + offset + ', ' + arg_limit;
+		let prewhere 	= ' LIMIT ' + offset + ', ' + arg_limit;
+		this.where  	+= mysql_real_escape_string(prewhere);
 		return this;
 	}
 
@@ -291,6 +314,33 @@ module.exports = function() {
 
 	function _removeLastComma(arg_string){
 		return arg_string.replace(/,\s*$/, "");
+	}
+
+	function mysql_real_escape_string (str) {
+		if( typeof str !== 'string' ) { return str; }
+
+	    return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
+	        switch (char) {
+	            case "\0":
+	                return "\\0";
+	            case "\x08":
+	                return "\\b";
+	            case "\x09":
+	                return "\\t";
+	            case "\x1a":
+	                return "\\z";
+	            case "\n":
+	                return "\\n";
+	            case "\r":
+	                return "\\r";
+	            case "\"":
+	            case "'":
+	            case "\\":
+	            case "%":
+	                return "\\"+char; // prepends a backslash to backslash, percent,
+	                                  // and double/single quotes
+	        }
+	    });
 	}
 };
 
