@@ -16,7 +16,7 @@ var my_modifiers = ['SQL_CALC_FOUND_ROWS', 'DISTINCT'];
 */
 var my_tables = [ {name:'some_table'} ];
 
-//Columns we want to query - * is allowed
+//Columns we want to query - * is allowed for all columns
 var my_fields = [
 	{table:'some_table',			column:'test_id'},
 	{table:'some_table',			column:'state'}
