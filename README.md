@@ -47,7 +47,12 @@ var my_query  = qb.buildSelect('SELECT ', my_modifiers, my_tables, my_fields)
                 .buildClause(' WHERE TRUE ', my_clause)
                 .buildeOrderBy(my_order_by)
                 .buildLimit(10,5).getQuery();
+		
+console.log(my_query);
 ```
+Will produce the following query: 
+* SELECT  SQL_CALC_FOUND_ROWS DISTINCT some_table.test_id, some_table.state FROM some_table   WHERE TRUE  AND (some_table.test_id = "123"  OR some_table.state LIKE "%florida%" ) AND (some_table.name1 = "value1"  OR some_table.name2 = "value2" ) ORDER BY some_column DESC LIMIT 5, 10 *
+
 ## Operators for where clause objects
 - operators are :
 - eq : = 
