@@ -8,6 +8,14 @@ var qb				= new query_builder();
 
 var my_modifiers = ['SQL_CALC_FOUND_ROWS', 'DISTINCT'];
 
+
+/**
+* tables to include in the FROM part - really only supports 1 table 
+* but i thought maybe id do joins at somepoint but since I use mysql views
+* I have had no use for joins in the query builder
+*/
+var my_tables = [ {name:'some_table'} ];
+
 //Columns we want to query - * is allowed
 var my_fields = [
 	{table:'some_table',			column:'test_id'},
