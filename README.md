@@ -38,3 +38,16 @@ var my_query  = qb.buildSelect('SELECT ', my_modifiers, my_tables, my_fields)
                 .buildeOrderBy(my_order_by)
                 .buildLimit(10,5).getQuery();
 ```
+## Operators for where clause objects
+operators are :
+eq : = 
+gt, greater_than : >
+gte, greater_than_equal_to : >=
+lt, less_than : <
+lte, less_than_equal_to : <=
+sw : like "%adsf"
+ew : like "asdf%"
+pm, partial_match, contains : like "%adsf%"
+nn, not_null : not null
+in : in ()
+not_in : not in ()
