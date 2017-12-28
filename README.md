@@ -14,10 +14,12 @@ var my_fields = [
 	{table:'some_table',			column:'state'}
 ];
 
-//An array of arrays to build a WHERE clause
-//The inner arrays contain objects that will be grouped together with OR operators.
-//The Outter arrays contain objects that will be grouped together with AND
-//If the operator is not assigned it will use the default which is 'eq' or =
+/**
+* An array of arrays to build a WHERE clause
+* The inner arrays contain objects that will be grouped together with OR operators.
+* The Outter arrays contain objects that will be grouped together with AND
+* If the operator is not assigned it will use the default which is 'eq' or =
+*/
 var my_clause 		= [
 	[
 		{table:"some_table", 	column:"test_id", 		value:"123"},
