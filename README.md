@@ -1,7 +1,7 @@
 # js_mysql_query_builder
-A javascript object for building mysql queries
+A javascript object for building mysql queries.  Very useful when you want to dynamically build queries and/or need more control over the generated syntax then other magic query builder modules might allow.
 
-## Getting Started
+## Example of searching for records with a SELECT statement
 ```
 var query_builder 	= require('./mod.query_builder.js');
 var qb				= new query_builder();
