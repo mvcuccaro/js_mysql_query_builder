@@ -141,7 +141,15 @@ module.exports = function() {
 				inner_element.operator 	= mysql_real_escape_string(inner_element.operator);
 				inner_element.table		= mysql_real_escape_string(inner_element.table);
 				inner_element.column 	= mysql_real_escape_string(inner_element.column);
-				inner_element.value 	= mysql_real_escape_string(inner_element.value);
+
+				//check to see if the inner_element value is an array since some operators require it - and escape accordingly
+				if( typeof(inner_element.value) == 'object' ){
+					inner_element.value.forEach(item => {
+						item = mysql_real_escape_string(item);
+					});
+				} else {
+					inner_element.value 	= mysql_real_escape_string(inner_element.value);
+				}
 
 				if( inner_element.operator === undefined || inner_element.operator == 'eq'){
 					where += inner_element.table + '.' + inner_element.column + ' = "' + inner_element.value + '" ';
@@ -210,6 +218,10 @@ module.exports = function() {
 								group 	= '(' + inner_elemenent.value + ')';
 							}
 							where += inner_element.table + '.' + inner_element.column + ' NOT IN ' + group;
+							break;
+
+						case 'between':
+							where += inner_element.table + '.' + inner_element.column + " BETWEEN '" + inner_element.value[0] + "' AND '" + inner_element.value[1] + "'";
 							break;
 
 						default:
@@ -365,7 +377,8 @@ var my_fields = [
 var my_clause 		= [
 	[
 		{table:"some_table", 	column:"test_id", 		value:"123"},
-		{table:"some_table", 	column:"state",			operator:"contains", value:"florida"}
+		{table:"some_table", 	column:"state",			operator:"contains", value:"florida"},
+		{table:"some_table",    column:"somedate",      operator:"between", value:['val1', 'val2'] }
 	],
 	[
 		{table:"some_table", 	column:"name1",			value:"value1"},
